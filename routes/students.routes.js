@@ -37,6 +37,13 @@ router.get('/', (req, res) => {
 
 
 
+//* GET /api/students/:studentId/bookings - Retrieves all bookings for a specific student //ver se nao seria algo assim: //GET /api/students/cohort/:cohortId - Retrieves all of the students for a given cohort
+
+
+
+
+//DELETE /api/students/:studentId
+
 
 
 module.exports = router;
