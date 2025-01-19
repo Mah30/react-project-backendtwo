@@ -53,7 +53,7 @@ app.use('/auth', authRoutes) -  */ // ainda nao existe
 // START SERVER
 mongoose
   .connect(
-    "mongodb://127.0.0.1:27017/cohort-tools-api" // inserir aqui o endereco do meu banco de dados
+    "mongodb://127.0.0.1:27017/react-backendtwo-api" // inserir aqui o endereco do meu banco de dados
   )
   .then(x => {
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
