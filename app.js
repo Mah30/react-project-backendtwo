@@ -22,12 +22,11 @@ const PORT = 5005;
 
 
 // MIDDLEWARE
-/* app.use(express.json());
+app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser()); */
-
+app.use(cookieParser());
 
 
 
@@ -36,18 +35,13 @@ app.use(cookieParser()); */
 const indexRoutes = require('./routes/index.routes')
 app.use('/', indexRoutes) // isso provavelmente vem de uma '/api'
 
-
-
-
 /* const authRoutes = require('./routes/auth.routes')
-app.use('/auth', authRoutes) -  */ // ainda nao existe
+app.use('/auth', authRoutes) */ // ainda nao existe
 
 
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 /* require('./error-handling')(app) */ // Saber como eu faco para importar/criar esse error-handling ?
-
-
 
 
 // START SERVER

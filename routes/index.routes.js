@@ -3,20 +3,21 @@ const router = express.Router();
 
 
 
-const studentsRoutes = require('./students.routes');
-console.log('Exportação de students.routes:', studentsRoutes); // retirar isso depois
-
-router.use('/students', studentsRoutes);
-
-
 router.get('/', (request, response, next) => {
     response.json('All good in here')
 });
 
+const bookings = require('./bookings.routes')
+router.use('/bookings', bookingsRoutes)
+
+const classesRoutes = require('./classes.routes');
+router.use('/classes', classesRoutes )
 
 
+const studentsRoutes = require('./students.routes');
+router.use('/students', studentsRoutes);
 
 
-
+ 
 
 module.exports = router;

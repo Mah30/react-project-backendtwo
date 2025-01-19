@@ -6,6 +6,23 @@ const router = require('express').Router();
 
 
 /* classes ROUTES */
+
+//  GET  api/classes - Retrieve all classes from the database collection
+router.get("/", (req, res, next) => {
+    Student.find({})
+        /* .populate("cohort") */ //ver se precisa populate aqui
+        .then((classes) => {
+            console.log("Retrieved classes ->", classes);
+  
+            res.status(200).json(classes);
+        })
+        .catch((error) => {
+            console.error("Error while retrieving classes ->", error);
+            next(error);
+        });
+  });
+
+
 // GET /api/classes/:classId - Retrieves a specific class by id
 router.get('/api/classes/:classId', async (request, response, next) => {
     const { classId } = request.params;
@@ -159,3 +176,5 @@ router.delete('/api/classes/:classId', async (request, response, next) => {
     }
   });
   
+
+  module.exports = router;

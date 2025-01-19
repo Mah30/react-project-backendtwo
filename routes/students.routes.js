@@ -9,7 +9,7 @@ const router = require('express').Router();
 
 /* students ROUTES */
 
-//  GET  /students - Retrieve all students from the database
+//  GET  api/students - Retrieve all students from the database collection
 router.get("/", (req, res, next) => {
     Student.find({})
         /* .populate("cohort") */
