@@ -16,7 +16,7 @@ const ClassSchema = new Schema ({
 
     },
     schedule: {
-        type: [Data],   //Datas e horários disponíveis
+        type: [Date],   //Datas e horários disponíveis
     },
     duration: {
         required: true,

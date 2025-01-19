@@ -7,7 +7,7 @@ router.get('/', (request, response, next) => {
     response.json('All good in here')
 });
 
-const bookings = require('./bookings.routes')
+const bookingsRoutes = require('./bookings.routes')
 router.use('/bookings', bookingsRoutes)
 
 const classesRoutes = require('./classes.routes');

@@ -11,6 +11,10 @@ const studentsSchema = new Schema ({
         required: true,
         type: String
     },
+    age: {
+        required: true,
+        type: String
+    },
     email: {
         required: true,
         type: String,
@@ -18,7 +22,7 @@ const studentsSchema = new Schema ({
     },
     phone: {
         required: true,
-        type: String
+        type: Number
     },
     languages: {
         type: [String],

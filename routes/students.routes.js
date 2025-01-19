@@ -1,7 +1,7 @@
 const { request, response } = require("express");
 const Student = require("../models/Student.model");
 const mongoose = require('mongoose');
-const Booking = require("../models/Booking.moodel");
+const Booking = require("../models/Booking.model");
 
 const router = require('express').Router();
 

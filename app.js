@@ -51,6 +51,10 @@ mongoose
   )
   .then(x => {
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
-    app.listen(5173, () => console.log('My first app listening on port http://localhost:3000'))
+    app.listen(3000, () => console.log('My first app listening on port http://localhost:3000'))
   })
   .catch(err => console.error('Error connecting to mongo', err))
+
+
+
+  module.exports = app
