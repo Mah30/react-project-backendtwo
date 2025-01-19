@@ -47,17 +47,26 @@ router.get('api/students/:studentId', async (request, response, next) => {
 });
 
 
-//POST /api/students - Creates a new student
-router.post('/', async (request, response, next) => {
+//POST /api/students - Creates a new student //essa rota do codigo ta certa?
+router.post('/api/students', async (request, response, next) => {
     try {
-        const newStudent = new Student.create(req.body)
-        const savedStudent = await newStudent.save();
+        const createdStudent = await Student.create({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            phone: req.body.phone,
+            languages: req.body.languages,
+            image: req.body.image,
+            booking: req.body.booking,
+            createdAt: req.body.createdAt,
+        });
 
-        res.status(201).json(savedStudent)
-        
+        console.log("Student added ->", createdStudent);
+
+        response.status(201).json(createdStudent);
     } catch (error) {
-        console.log(error);
-        next(error)
+        console.error("Error while creating the student ->", error);
+        next(error); 
     }
 });
 
@@ -110,7 +119,7 @@ router.get('api/students/:studentId/bookings', async (request, response, next) =
     const { studentId } = request.params;
   if (mongoose.isValidObjectId(studentId)) {
     try {
-      const bookings = await Booking.find({ user: studentId }).populate('class');
+      const bookings = await Booking.find({ user: studentId }).populate('class'); //confirmar se esta mesmo certo aqui
       if (!bookings.length) {
         return response.status(404).json({ message: "No bookings found for this student" });
       }
