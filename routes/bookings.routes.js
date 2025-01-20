@@ -46,13 +46,14 @@ router.get('/api/bookings/:bookingId', async (request, response, next) => {
 router.post('/api/bookings', async (request, response, next) => {
     const { userId, classId, date } = request.body;
     if (mongoose.isValidObjectId(userId) && mongoose.isValidObjectId(classId)) {
+     
       try {
-        const newBooking = new Booking({
+        const createdBooking = new Booking({
           user: userId,
           class: classId,
           date,
         });
-        const savedBooking = await newBooking.save();
+        const savedBooking = await createdBooking.save();
         response.status(201).json(savedBooking);
       } catch (error) {
         console.log(error);

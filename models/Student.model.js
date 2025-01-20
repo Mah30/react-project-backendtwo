@@ -13,7 +13,7 @@ const studentsSchema = new Schema ({
     },
     age: {
         required: true,
-        type: String
+        type: Number
     },
     email: {
         required: true,
@@ -46,4 +46,4 @@ const studentsSchema = new Schema ({
 const Student = mongoose.model('Student', studentsSchema)
 
 // EXPORT THE MODEL
-module.exports = Student
+module.exports = Student;
