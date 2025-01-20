@@ -1,19 +1,17 @@
 const express = require("express");
+require ("dotenv").config()
+
 const mongoose = require ("mongoose");
-
-/* const morgan = require("morgan"); */
-/* const cors = require ("cors");
-
-const cookieParser = require("cookie-parser");
-const PORT = 5005; */
+const configureApp = require("./config"); // Importa a configuração dos middlewares
+const { isAuthenticated } = require("./middlewares/route-guard.middleware");
 
 
-const configureApp = require("./config/index"); // Importa a configuração dos middlewares
+
 
 // app.js
 const app = express ();
 
-require ("dotenv").config()
+configureApp(app); // Configura middlewares globais
 
 
 /* 
@@ -22,39 +20,40 @@ const PORT = 5005;
 
 
 
-// MIDDLEWARE
-/* app.use(express.json());
-app.use(morgan("dev"));
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser()); */
-
-
-
 /* Routes */
 // 👇 Start handling routes here
 const indexRoutes = require('./routes/index.routes')
 app.use('/', indexRoutes) // rota base - isso provavelmente vem de uma '/api'?
 
+//rotas de autenticacao
 const authRoutes = require('./routes/auth.routes')
 app.use('/auth', authRoutes)
 
 
+//rotas protegidas  //estao também no index.js router ... talvez transfiro para lá todas
+const studentsRoutes = require("./routes/students.routes");
+app.use("/students", isAuthenticated, studentsRoutes); // Rotas protegidas //Aqui é student ou students??
+
+const bookingRoutes = require("./routes/booking.routes");
+app.use("/bookings", isAuthenticated, bookingRoutesRoutes); // Rotas protegidas
+
+
+
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
- require('./error-handling')(app)  // Saber como eu faco para importar/criar esse error-handling ?
+ require('./error-handling')(app)  
 
 
-// START SERVER
-mongoose
-  .connect(
-    "mongodb://127.0.0.1:27017/react-backendtwo-api" // inserir aqui o endereco do meu banco de dados
-  )
+
+// START SERVER - conexao com o MongoDB
+  mongoose
+  .connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/react-backendtwo-api")
   .then(x => {
-    console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
-    app.listen(3000, () => console.log('My first app listening on port http://localhost:3000'))
+    console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`);
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => console.log(`App listening on port http://localhost:${PORT}`));
   })
-  .catch(err => console.error('Error connecting to mongo', err))
+  .catch(err => console.error("Error connecting to MongoDB", err));
 
 
 
