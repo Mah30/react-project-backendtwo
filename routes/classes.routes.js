@@ -14,7 +14,7 @@ router.get("/", (req, res, next) => {
         .then((classes) => {
             console.log("Retrieved classes ->", classes);
   
-            res.status(200).json(classes);
+            response.status(200).json(classes);
         })
         .catch((error) => {
             console.error("Error while retrieving classes ->", error);

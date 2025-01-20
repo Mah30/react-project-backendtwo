@@ -15,8 +15,7 @@ router.get("/", (req, res, next) => {
         /* .populate("cohort") */
         .then((students) => {
             console.log("Retrieved students ->", students);
-
-            res.status(200).json(students);
+            response.status(200).json(students);
         })
         .catch((error) => {
             console.error("Error while retrieving students ->", error);
@@ -140,12 +139,12 @@ router.delete('api/students/:studentId', async (request, response, next) => {
     if (mongoose.isValidObjectId(studentId)) {
       try {
         await Student.findByIdAndDelete(studentId)
-        res.status(204).json() 
+        response.status(204).json() 
       } catch (error) {
         next(error)
       }
     } else {
-      res.status(400).json({ message: 'invalid id' })
+      response.status(400).json({ message: 'invalid id' })
     }
   });
   

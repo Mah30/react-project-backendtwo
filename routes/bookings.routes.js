@@ -13,7 +13,7 @@ router.get("/", (req, res, next) => {
       .then((bookings) => {
           console.log("Retrieved bookings ->", bookings);
 
-          res.status(200).json(bookings);
+          response.status(200).json(bookings);
       })
       .catch((error) => {
           console.error("Error while retrieving bookings ->", error);
@@ -44,7 +44,25 @@ router.get('/api/bookings/:bookingId', async (request, response, next) => {
 
 // POST /api/bookings - Creates a new booking
 router.post('/api/bookings', async (request, response, next) => {
-    const { userId, classId, date } = request.body;
+  try {
+    const createdBooking = await Booking.create({
+        student: req.body.student,
+        class: req.body.class,
+        date: req.body.date,
+        status: req.body.phone,
+    });
+
+    console.log("Booking added ->", createdBooking);
+
+    response.status(201).json(createdBooking);
+} catch (error) {
+    console.error("Error while creating the booking ->", error);
+    next(error); 
+}
+});
+
+// POST /api/bookings - Creates a new booking
+    /* const { userId, classId, date } = request.body;
     if (mongoose.isValidObjectId(userId) && mongoose.isValidObjectId(classId)) {
      
       try {
@@ -61,8 +79,8 @@ router.post('/api/bookings', async (request, response, next) => {
       }
     } else {
       response.status(400).json({ message: "Invalid User Id or Class Id" });
-    }
-  });
+    } */
+
 
 
 // PUT /api/bookings/:bookingId - Updates a specific booking by id
