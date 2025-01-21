@@ -3,8 +3,8 @@ const router = express.Router();
 
 
 
-router.get('/', (request, response, next) => {
-    response.json('All good in here')
+router.get('/', (req, res, next) => {
+    res.json('All good in here')
 });
 
 const bookingsRoutes = require('./bookings.routes')

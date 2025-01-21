@@ -1,17 +1,17 @@
 const jwt = require('jsonwebtoken')
 
-const isAuthenticated = (request, response, next) => {
+const isAuthenticated = (req, res, next) => {
 
-   /*  if (!request.headers.authorization || !request.headers.authorization.startsWith('Bearer ')) {
-        return response.status(401).json({ message: 'Token not provided or invalid' });  //verifica o Header antes de tentar algo
+   /*  if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'Token not provided or invalid' });  //verifica o Header antes de tentar algo
       } */
 
     try {
-      const token = request.headers.authorization.split(' ')[1] 
+      const token = req.headers.authorization.split(' ')[1] 
 
       const payload = jwt.verify(token, process.env.TOKEN_SECRET) // decode token and get payload
   
-      request.tokenPayload = payload // to pass the decoded payload to the next route
+      req.tokenPayload = payload // to pass the decoded payload to the next route
       next()
     } catch (error) {
         console.error('Authentication error:', error.message);
@@ -21,12 +21,12 @@ const isAuthenticated = (request, response, next) => {
       // 3. There is no headers or authorization in req (no token)
 
       if (error.name === 'TokenExpiredError') {
-        return response.status(401).json({ message: 'Token expired' });
+        return res.status(401).json({ message: 'Token expired' });
       } else if (error.name === 'JsonWebTokenError') {
-        return response.status(401).json({ message: 'Invalid token' });
+        return res.status(401).json({ message: 'Invalid token' });
       }
       
-      response.status(401).json({ message: 'token not provided or not valid'})
+      res.status(401).json({ message: 'token not provided or not valid'})
     }
   }
   
