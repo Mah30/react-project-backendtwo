@@ -4,6 +4,7 @@ require ("dotenv").config()
 const mongoose = require ("mongoose");
 const configureApp = require("./config"); // Importa a configuração dos middlewares
 const { isAuthenticated } = require("./middlewares/route-guard.middleware");
+const withDB = require("./db")
 
 
 
@@ -14,9 +15,9 @@ const app = express ();
 configureApp(app); // Configura middlewares globais
 
 
-/* 
-const PORT = 5005;
- */
+// Conecta ao banco e inicia o servidor
+const PORT = process.env.PORT  || 3000;
+
 
 
 
@@ -29,13 +30,6 @@ app.use('/', indexRoutes) // rota base - isso provavelmente vem de uma '/api'?
 const authRoutes = require('./routes/auth.routes')
 app.use('/auth', authRoutes)
 
-
-//rotas protegidas  //estao também no index.js router ... talvez transfiro para lá todas
-const studentsRoutes = require("./routes/students.routes");
-app.use("/students", isAuthenticated, studentsRoutes); // Rotas protegidas //Aqui é student ou students??
-
-const bookingRoutes = require("./routes/booking.routes");
-app.use("/bookings", isAuthenticated, bookingRoutesRoutes); // Rotas protegidas
 
 
 
@@ -51,6 +45,7 @@ app.use("/bookings", isAuthenticated, bookingRoutesRoutes); // Rotas protegidas
   .then(x => {
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`);
     const PORT = process.env.PORT || 3000;
+
     app.listen(PORT, () => console.log(`App listening on port http://localhost:${PORT}`));
   })
   .catch(err => console.error("Error connecting to MongoDB", err));
