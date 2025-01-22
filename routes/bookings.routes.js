@@ -6,10 +6,10 @@ const router = require('express').Router();
 
 
 
-//  GET  api/bookings - Retrieve all bookings from the database collection
+//  GET  /api/bookings - Retrieve all bookings from the database collection
 router.get("/", (req, res, next) => {
   Booking.find({})
-      .populate('user', 'name email')
+      .populate('student', 'firstName lastName email')
       .populate('class', 'name schedule') 
       .then((bookings) => {
           console.log("Retrieved bookings ->", bookings);
@@ -27,7 +27,7 @@ router.get('/api/bookings/:bookingId', async (req, res, next) => {
     const {bookingId} = req.params;
     if (mongoose.isValidObjectId(bookingId)) {
         try {
-            const booking = await Booking.findById(bookingId).populate('user', 'name email').populate('class', 'name schedule');
+            const booking = await Booking.findById(bookingId).populate('student', 'firstName lastName email').populate('class', 'name schedule');
             if (!booking) {
                 return res.status(404).json({ message: "Booking not found" });
       }
@@ -44,9 +44,15 @@ router.get('/api/bookings/:bookingId', async (req, res, next) => {
 
 // POST /api/bookings - Creates a new booking
 router.post('/api/bookings', async (req, res, next) => {
+  const { student, class: classId, date, status } = req.body;
+  
+  if (!mongoose.isValidObjectId(student) || !mongoose.isValidObjectId(classId)) {
+    return res.status(400).json({ message: "Invalid Student ID or Class ID" });
+  }
+
   try {
     const createdBooking = await Booking.create({
-        booking: req.body.booking,
+        student: req.body.student,
         class: req.body.class,
         date: req.body.date,
         status: req.body.status,
@@ -62,12 +68,12 @@ router.post('/api/bookings', async (req, res, next) => {
 });
 
 // POST /api/bookings - Creates a new booking
-    /* const { userId, classId, date } = req.body;
-    if (mongoose.isValidObjectId(userId) && mongoose.isValidObjectId(classId)) {
+    /* const {studentId, classId, date } = req.body;
+    if (mongoose.isValidObjectId(studentId) && mongoose.isValidObjectId(classId)) {
      
       try {
         const createdBooking = new Booking({
-          user: userId,
+          student: studentId,
           class: classId,
           date,
         });
@@ -78,7 +84,7 @@ router.post('/api/bookings', async (req, res, next) => {
         next(error);
       }
     } else {
-      res.status(400).json({ message: "Invalid User Id or Class Id" });
+      res.status(400).json({ message: "Invalid Student Id or Class Id" });
     } */
 
 

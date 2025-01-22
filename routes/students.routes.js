@@ -9,7 +9,7 @@ const router = require('express').Router();
 
 /* students ROUTES */
 
-//  GET  api/students - Retrieve all students from the database collection
+//  GET  /api/students - Retrieve all students from the database collection
 router.get("/", (req, res, next) => {
     Student.find({})
         /* .populate("cohort") */
@@ -25,7 +25,7 @@ router.get("/", (req, res, next) => {
 
 
 //GET /api/students/:studentId - Retrieves a specific student by id
-router.get('api/students/:studentId', async (req, res, next) => {
+router.get('/api/students/:studentId', async (req, res, next) => {
     const {studentId} = req.params
     if (mongoose.isValidObjectId(studentId)) {
         try{
@@ -99,7 +99,7 @@ router.get('/api/students/booking/:bookingId', async (req, res, next) => {
     const { bookingId } = req.params;
     if (mongoose.isValidObjectId(bookingId)) {
       try {
-        const bookings = await Booking.findById(bookingId).populate('user'); //catar populate //Booking n definido?
+        const bookings = await Booking.findById(bookingId).populate('student'); //catar populate //Booking n definido?
         if (!bookings) {
           return res.status(404).json({ message: "Booking not found" });
         }
@@ -115,17 +115,17 @@ router.get('/api/students/booking/:bookingId', async (req, res, next) => {
 
 
 //* GET /api/students/:studentId/bookings - Retrieves(obtém) all bookings for a specific student 
-router.get('api/students/:studentId/bookings', async (req, res, next) => {
+router.get('/api/students/:studentId/bookings', async (req, res, next) => {
     const { studentId } = req.params;
   if (mongoose.isValidObjectId(studentId)) {
     try {
-      const bookings = await Booking.find({ user: studentId }).populate('class'); //confirmar se esta mesmo certo aqui
+      const bookings = await Booking.find({ student: studentId }).populate('class'); //confirmar se esta mesmo certo aqui
       if (!bookings.length) {
       return res.status(404).json({ message: "No bookings found for this student" });
     }
       res.status(200).json(bookings);
     } catch (error) {
-      console.log(error);
+      console.log("Error while retrieving bookings ->", error);
       next(error);
     }
   } else {
@@ -135,7 +135,7 @@ router.get('api/students/:studentId/bookings', async (req, res, next) => {
 
 
 //DELETE /api/students/:studentId
-router.delete('api/students/:studentId', async (req, res, next) => {
+router.delete('/api/students/:studentId', async (req, res, next) => {
     const {studentId} = req.params
     if (mongoose.isValidObjectId(studentId)) {
       try {

@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+/* const model = mongoose.model; */
 
 const studentsSchema = new Schema ({
 
     firstName: {
+        lowercase: true,   
         required: true,
+        trim: true,
         type: String
     },
     lastName: {
@@ -15,11 +18,21 @@ const studentsSchema = new Schema ({
         required: true,
         type: Number
     },
+
+    // Credenciais e contato
     email: {
-        required: true,
         type: String,
-        unique: true //precisa ser ciptografado
+        lowercase: true,
+        trim: true,
+        required: true,
+        unique: true,
     },
+    passwordHash: {
+        type: String,
+        required: true,
+      },
+    
+    
     phone: {
         required: true,
         type: Number
@@ -30,17 +43,20 @@ const studentsSchema = new Schema ({
     },
     image: {
         type: String,
-        default: "https://i.imgur.com/r8bo8u7.png"
+        default: "https://i.imgur.com/r8bo8u7.png" //devo inserir imagem aqui?
     },
     booking:[{
         type: Schema.Types.ObjectId, 
         ref: "Booking",
-    }],
-    createdAt: {
-        type: Date, default: Date.now
+            },
+        ],
     },
+
+    {
+        // this second object adds extra properties: `createdAt` and `updatedAt`
+        timestamps: true,  
   
-})
+});
 
 // CREATE MODEL
 const Student = mongoose.model('Student', studentsSchema)

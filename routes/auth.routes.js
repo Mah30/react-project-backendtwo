@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
-const User = require('../models/User.model')
-
+const Student = require("../models/Student.model");
 const router = require('express').Router()
 const bcrypt = require('bcryptjs')
 const { isAuthenticated } = require('../middlewares/route-guard.middleware') 
@@ -8,18 +7,18 @@ const { isAuthenticated } = require('../middlewares/route-guard.middleware')
 
 // POST /api/auth/signup - Rota de Cadastro
   router.post("/signup", async (req, res, next) => {
-    const { name, email, password } = req.body; // Desestruturando credenciais
+    const { firstName, lastName, email, password } = req.body; // Desestruturando credenciais
 
     // Validação básica de entrada
-    if (!name || !email || !password) {
+    if (!firstName || !lastName  || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     try {
       // Verifica se o usuário já existe
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
+      const existingStudent = await Student.findOne({ email });
+      if (existingStudent) {
+        return res.status(400).json({ message: "Student already exists" });
       }
 
         // Gera o hash da senha
@@ -27,12 +26,17 @@ const { isAuthenticated } = require('../middlewares/route-guard.middleware')
       const passwordHash = bcrypt.hashSync(password, salt);
       
       // Cria o novo usuário
-      const newUser = await User.create({ username, email, passwordHash });
+      const newStudent = await Student.create({ 
+        firstName,
+        lastName,
+        email,
+        passwordHash, 
+      });
 
       // Remove informações sensíveis (como hash da senha) antes de enviar a resposta
-      const { passwordHash: _, ...userWithoutPassword } = newUser.toObject();
+      const { passwordHash: _, ...studentWithoutPassword } = newStudent.toObject();
   
-      res.status(201).json(userWithoutPassword);
+      res.status(201).json(studentWithoutPassword);
     } catch (error) {
       next(error);
     }
@@ -49,15 +53,15 @@ router.post('/login', async (req, res, next) => {
   }
     // Check for user with given username
     try {
-      const potentialUser = await User.findOne({ email }) //or username: credentials.username
+      const potentialStudent = await Student.findOne({ email }) //or username: credentials.username
 
-      if (potentialUser) {
+      if (potentialStudent) {
 
         // Check the password
-        if (bcrypt.compareSync(credentials.password, potentialUser.passwordHash)) {
+        if (bcrypt.compareSync(credentials.password, potentialStudent.passwordHash)) {
         
           // The user has the right credentials
-          const payload = { userId: potentialUser._id }
+          const payload = { studentId: potentialStudent._id }
           const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
             algorithm: 'HS256',
             expiresIn: '6h',
@@ -67,7 +71,7 @@ router.post('/login', async (req, res, next) => {
           res.status(403).json({ message: 'Incorrect password' })
         }
       } else {
-        res.status(400).json({ message: 'No user with this username' })
+        res.status(400).json({ message: 'No student with this email' })
       }
     } catch (error) {
       next(error)
@@ -80,11 +84,11 @@ router.post('/login', async (req, res, next) => {
     console.log('Log from handler')
     try {
          // Obtém o usuário atual de ac c/ ID do tokken
-      const currentUser = await User.findById(req.tokenPayload.userId)
-      if (!currentUser) {
-      return res.status(404).json({ message: "User not found" });
+      const currentStudent = await Student.findById(req.tokenPayload.studentId)
+      if (!currentStudent) {
+      return res.status(404).json({ message: "Student not found" });
     }
-      res.json(currentUser)
+      res.json(currentStudent)
     } catch (error) {
       next(error)
     }

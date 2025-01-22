@@ -7,7 +7,7 @@ const router = require('express').Router();
 
 /* classes ROUTES */
 
-//  GET  api/classes - Retrieve all classes from the database collection
+//  GET  /api/classes - Retrieve all classes from the database collection
 router.get("/", (req, res, next) => {
     Student.find({})
         /* .populate("cohort") */ //ver se precisa populate aqui
@@ -44,7 +44,7 @@ router.get('/api/classes/:classId', async (req, res, next) => {
 
 
 // POST /api/classes - Creates a new class
-router.post('api/classes', async (req, res, next) => {
+router.post('/api/classes', async (req, res, next) => {
     try {
         const createdClass = await Class.create({
             name: req.body.name,
@@ -91,18 +91,18 @@ router.put('/api/classes/:classId', async (req, res, next) => {
 
 
 //* GET /api/classes/:classId/bookings - Retrieves all bookings for a specific class - detalhes das reservas como data, horario
-router.get('api/classes/:classId/bookings', async (req, res, next) => {
+router.get('/api/classes/:classId/bookings', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
-        const bookings = await Booking.find({ class: classId }).populate('user', 'name email').populate('class', 'name schedule'); 
+        const bookings = await Booking.find({ class: classId }).populate('student', 'firstName lastName email').populate('class', 'name schedule'); 
         if (!bookings.length) {
           return res.status(404).json({ message: "No bookings found for this class" });
         }
 
         // Retorna a lista de estudantes e o número total  //.json(bookings);
         res.status(200).json({
-          students: bookings.map((booking) => booking.user),
+          students: bookings.map((booking) => booking.student),
           totalStudents: bookings.length,
         });
       } catch (error) {
@@ -122,11 +122,11 @@ router.get('/api/classes/:classId/students', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
-        const bookings = await Booking.find({ class: classId }).populate('user', 'name email'); //confirmar se esta mesmo certo aqui
+        const bookings = await Booking.find({ class: classId }).populate('student', 'firstName lastName email'); //confirmar se esta mesmo certo aqui
         if (!bookings.length) {
           return res.status(404).json({ message: "No students found for this class" });
         }
-        const students = bookings.map((booking) => booking.user); //catar map
+        const students = bookings.map((booking) => booking.student); //catar map
         res.status(200).json(students);
       } catch (error) {
         console.log(error);
@@ -142,11 +142,11 @@ router.get('/api/classes/:classId/students', async (req, res, next) => {
 // POST /api/classes/:classId/bookings - Creates a new booking for a specific class //modificar o código
 router.post('/api/classes/:classId/bookings', async (req, res, next) => {
     const { classId } = req.params; //catar
-    const { userId, date } = req.body; //catar
-    if (mongoose.isValidObjectId(classId) && mongoose.isValidObjectId(userId)) {
+    const { studentId, date } = req.body; //catar
+    if (mongoose.isValidObjectId(classId) && mongoose.isValidObjectId(studentId)) {
       try {
         const newBooking = new Booking({
-          user: userId,
+          student: studentId,
           class: classId,
           date,
         });
@@ -157,7 +157,7 @@ router.post('/api/classes/:classId/bookings', async (req, res, next) => {
         next(error);
       }
     } else {
-      res.status(400).json({ message: "Invalid Class Id or User Id" });
+      res.status(400).json({ message: "Invalid Class Id or student Id" });
     }
   });
   

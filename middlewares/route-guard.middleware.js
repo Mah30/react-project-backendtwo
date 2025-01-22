@@ -15,11 +15,7 @@ const isAuthenticated = (req, res, next) => {
       next()
     } catch (error) {
         console.error('Authentication error:', error.message);
-      // the middleware will catch error and send 401 if:
-      // 1. There is no token
-      // 2. Token is invalid
-      // 3. There is no headers or authorization in req (no token)
-
+      // the middleware will catch error and send 401 if: There is no token , Token is invalid, There is no headers or authorization in req (no token)
       if (error.name === 'TokenExpiredError') {
         return res.status(401).json({ message: 'Token expired' });
       } else if (error.name === 'JsonWebTokenError') {

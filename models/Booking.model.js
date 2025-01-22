@@ -5,7 +5,7 @@ const BookingSchema = new Schema ({
     student: {
         required: true,
         type: Schema.Types.ObjectId, 
-        ref: "User", 
+        ref: "Student", 
     },
     class: {
         required: true,
@@ -23,6 +23,9 @@ const BookingSchema = new Schema ({
         default: 'confirmed'
 
     },
+    /* {
+        // this second object adds extra properties: `createdAt` and `updatedAt`
+        timestamps: true,  */  
 
 })
 
