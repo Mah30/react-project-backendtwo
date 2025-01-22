@@ -24,7 +24,7 @@ router.get("/", (req, res, next) => {
 
 
 // GET /api/classes/:classId - Retrieves a specific class by id
-router.get('/api/classes/:classId', async (req, res, next) => {
+router.get('/:classId', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -44,7 +44,7 @@ router.get('/api/classes/:classId', async (req, res, next) => {
 
 
 // POST /api/classes - Creates a new class
-router.post('/api/classes', async (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
         const createdClass = await Class.create({
             name: req.body.name,
@@ -68,7 +68,7 @@ router.post('/api/classes', async (req, res, next) => {
 
 
 // PUT /api/classes/:classId - Updates a specific class by id
-router.put('/api/classes/:classId', async (req, res, next) => {
+router.put('/:classId', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -91,7 +91,7 @@ router.put('/api/classes/:classId', async (req, res, next) => {
 
 
 //* GET /api/classes/:classId/bookings - Retrieves all bookings for a specific class - detalhes das reservas como data, horario
-router.get('/api/classes/:classId/bookings', async (req, res, next) => {
+router.get('/:classId/bookings', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -118,7 +118,7 @@ router.get('/api/classes/:classId/bookings', async (req, res, next) => {
                                                                                             //esses dois nao sao a mesma coisa? - sao bem parecidos, tvz juntar as rotas?
 
 //* GET /api/classes/:classId/students - Retrieves all students booked for a specific class - quais alunos reservaram uma aula
-router.get('/api/classes/:classId/students', async (req, res, next) => {
+router.get('/:classId/students', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -140,7 +140,7 @@ router.get('/api/classes/:classId/students', async (req, res, next) => {
 
 
 // POST /api/classes/:classId/bookings - Creates a new booking for a specific class //modificar o código
-router.post('/api/classes/:classId/bookings', async (req, res, next) => {
+router.post('/:classId/bookings', async (req, res, next) => {
     const { classId } = req.params; //catar
     const { studentId, date } = req.body; //catar
     if (mongoose.isValidObjectId(classId) && mongoose.isValidObjectId(studentId)) {
@@ -163,7 +163,7 @@ router.post('/api/classes/:classId/bookings', async (req, res, next) => {
   
 
 // DELETE /api/classes/:classId - Deletes a specific class by id
-router.delete('/api/classes/:classId', async (req, res, next) => {
+router.delete('/:classId', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {

@@ -22,8 +22,8 @@ router.get("/", (req, res, next) => {
 });
 
 
-// GET /api/bookings/:bookingId - Retrieves a specific booking by id
-router.get('/api/bookings/:bookingId', async (req, res, next) => {
+// GET /:bookingId - Retrieves a specific booking by id
+router.get('/:bookingId', async (req, res, next) => {
     const {bookingId} = req.params;
     if (mongoose.isValidObjectId(bookingId)) {
         try {
@@ -43,7 +43,7 @@ router.get('/api/bookings/:bookingId', async (req, res, next) => {
 
 
 // POST /api/bookings - Creates a new booking
-router.post('/api/bookings', async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   const { student, class: classId, date, status } = req.body;
   
   if (!mongoose.isValidObjectId(student) || !mongoose.isValidObjectId(classId)) {
@@ -89,8 +89,8 @@ router.post('/api/bookings', async (req, res, next) => {
 
 
 
-// PUT /api/bookings/:bookingId - Updates a specific booking by id
-router.put('/api/bookings/:bookingId', async (req, res, next) => {
+// PUT /:bookingId - Updates a specific booking by id
+router.put('/:bookingId', async (req, res, next) => {
     const { bookingId } = req.params;
     if (mongoose.isValidObjectId(bookingId)) {
       try {
@@ -110,8 +110,8 @@ router.put('/api/bookings/:bookingId', async (req, res, next) => {
 
 
 
-// DELETE /api/bookings/:bookingId - Deletes a specific booking by id
-router.delete('/api/bookings/:bookingId', async (req, res, next) => {
+// DELETE /:bookingId - Deletes a specific booking by id
+router.delete('/:bookingId', async (req, res, next) => {
     const { bookingId } = req.params;
     if (mongoose.isValidObjectId(bookingId)) {
       try {
