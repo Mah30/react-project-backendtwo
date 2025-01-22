@@ -57,7 +57,9 @@ router.post('/', async (req, res, next) => {
             languages: req.body.languages,
             image: req.body.image,
             booking: req.body.booking,
-            createdAt: req.body.createdAt,
+            timestamps: req.body.timestamps,
+            age: req.body.age,
+            passwordHash: req.body.passwordHash 
         });
 
         console.log("Student added ->", createdStudent);

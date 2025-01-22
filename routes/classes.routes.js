@@ -9,7 +9,7 @@ const router = require('express').Router();
 
 //  GET  /api/classes - Retrieve all classes from the database collection
 router.get("/", (req, res, next) => {
-    Student.find({})
+    Class.find({})
         /* .populate("cohort") */ //ver se precisa populate aqui
         .then((classes) => {
             console.log("Retrieved classes ->", classes);
@@ -60,7 +60,7 @@ router.post('/', async (req, res, next) => {
 
         res.status(201).json(createdClass);
     } catch (error) {
-        console.error("Error while creating the student ->", error);
+        console.error("Error while creating the class ->", error);
         next(error); 
     }
 });
