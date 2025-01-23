@@ -1,13 +1,14 @@
-const jwt = require('jsonwebtoken')
+const express = require('express');
+const jwt = require('jsonwebtoken');
 const Student = require("../models/Student.model");
-const router = require('express').Router()
-const bcrypt = require('bcryptjs')
-const { isAuthenticated } = require('../middlewares/route-guard.middleware') 
+const router = require('express').Router();
+const bcrypt = require('bcryptjs');
+const { isAuthenticated } = require('../middlewares/route-guard.middleware'); 
 
 
 // POST /api/auth/signup - Rota de Cadastro
   router.post("/signup", async (req, res, next) => {
-    const { firstName, lastName, email, password } = req.body; // Desestruturando credenciais
+    const { firstName, lastName, email, password } = req.body; 
 
     // Validação básica de entrada
     if (!firstName || !lastName  || !email || !password) {
@@ -43,9 +44,10 @@ const { isAuthenticated } = require('../middlewares/route-guard.middleware')
   });
   
 
-  // POST /api/auth/login - Rota de Login
+  // POST /auth/login - Rota de Login
 router.post('/login', async (req, res, next) => {
-    const credentials = req.body // { username: '...', password: '...'} //talvez preciso substituir a credencial por username e passwort
+
+  const { email, password } = req.body // { username: '...', password: '...'} //talvez preciso substituir a credencial por username e passwort
   
         // Validação básica de entrada
     if (!email || !password) {
@@ -54,9 +56,11 @@ router.post('/login', async (req, res, next) => {
     // Check for user with given username
     try {
       const potentialStudent = await Student.findOne({ email }) //or username: credentials.username
+      if (!potentialStudent) {
+        return res.status(400).json({ message: 'No student with this email' });
+    }
 
       if (potentialStudent) {
-
         // Check the password
         if (bcrypt.compareSync(credentials.password, potentialStudent.passwordHash)) {
         
@@ -74,14 +78,14 @@ router.post('/login', async (req, res, next) => {
         res.status(400).json({ message: 'No student with this email' })
       }
     } catch (error) {
-      next(error)
+      next(error);
     }
-  })
+  });
 
 
   // GET /api/auth/verify - Rota de Verificação
   router.get('/verify', isAuthenticated, async (req, res, next) => {
-    console.log('Log from handler')
+    
     try {
          // Obtém o usuário atual de ac c/ ID do tokken
       const currentStudent = await Student.findById(req.tokenPayload.studentId)

@@ -4,7 +4,7 @@ const router = express.Router();
 
 
 router.get('/', (req, res, next) => {
-    res.json('All good in here')
+    res.json({ message: 'All good in here' });
 });
 
 const bookingsRoutes = require('./bookings.routes')

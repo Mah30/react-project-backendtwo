@@ -11,7 +11,7 @@ const withDB = require("./db")
 // app.js
 const app = express ();
 
-configureApp(app); // Configura middlewares globais
+require("./config")(app); // Configura middlewares globais
 
 
 // Conecta ao banco e inicia o servidor
@@ -21,10 +21,12 @@ const PORT = process.env.PORT  || 3000;
 /* Routes */
 // 👇 Start handling routes here
 const indexRoutes = require('./routes/index.routes')
-app.use('/', indexRoutes) // rota base - isso provavelmente vem de uma '/api'?
+app.use('/api', indexRoutes) 
+
 
 //rotas de autenticacao
-const authRoutes = require('./routes/auth.routes')
+const authRoutes = require('./routes/auth.routes');
+const { error } = require("console");
 app.use('/auth', authRoutes)
 
 
@@ -43,7 +45,7 @@ app.use('/auth', authRoutes)
 
     app.listen(PORT, () => console.log(`App listening on port http://localhost:${PORT}`));
   })
-  .catch(err => console.error("Error connecting to MongoDB", error));
+  .catch(error => console.error("Error connecting to MongoDB", error));
 
 
 

@@ -24,7 +24,7 @@ router.get("/", (req, res, next) => {
 });
 
 
-//GET /:studentId - Retrieves a specific student by id
+//GET api/students/:studentId - Retrieves a specific student by id
 router.get('/:studentId', async (req, res, next) => {
     const {studentId} = req.params
     if (mongoose.isValidObjectId(studentId)) {
@@ -72,7 +72,7 @@ router.post('/', async (req, res, next) => {
 });
 
 
-//PUT /:studentId - Updates a specific student by id
+//PUT api/students/:studentId - Updates a specific student by id
 router.put('/:studentId', async (req, res, next) => {
     const { studentId } = req.params;
     if (mongoose.isValidObjectId(studentId)) {
@@ -96,7 +96,7 @@ router.put('/:studentId', async (req, res, next) => {
   });
 
 
-//GET /booking/:bookingId - Retrieves all of the students for a given booking //(Isso é aqui mesmo?)
+//GET api/students/booking/:bookingId - Retrieves all of the students for a given booking //(Isso é aqui mesmo?)
 router.get('/booking/:bookingId', async (req, res, next) => {
     const { bookingId } = req.params;
     if (mongoose.isValidObjectId(bookingId)) {
@@ -116,7 +116,7 @@ router.get('/booking/:bookingId', async (req, res, next) => {
   });
 
 
-//* GET /:studentId/bookings - Retrieves(obtém) all bookings for a specific student 
+//* GET api/students/:studentId/bookings - Retrieves(obtém) all bookings for a specific student 
 router.get('/:studentId/bookings', async (req, res, next) => {
     const { studentId } = req.params;
   if (mongoose.isValidObjectId(studentId)) {
@@ -136,7 +136,7 @@ router.get('/:studentId/bookings', async (req, res, next) => {
 });
 
 
-//DELETE /:studentId
+//DELETE api/students/:studentId
 router.delete('/:studentId', async (req, res, next) => {
     const {studentId} = req.params
     if (mongoose.isValidObjectId(studentId)) {

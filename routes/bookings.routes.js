@@ -111,7 +111,7 @@ router.post('/', async (req, res, next) => {
 
 
 
-// PUT /:bookingId - Updates a specific booking by id
+// PUT /api/booking/:bookingId - Updates a specific booking by id
 router.put('/:bookingId', async (req, res, next) => {
     const { bookingId } = req.params;
     if (mongoose.isValidObjectId(bookingId)) {
