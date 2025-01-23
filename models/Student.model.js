@@ -11,7 +11,9 @@ const studentsSchema = new Schema ({
         type: String
     },
     lastName: {
+        lowercase: true,
         required: true,
+        trim: true,
         type: String
     },
     age: {
@@ -25,11 +27,11 @@ const studentsSchema = new Schema ({
         lowercase: true,
         trim: true,
         required: true,
-        unique: true,
+        unique: true
     },
     passwordHash: {
         type: String,
-        required: true,
+        required: true
       },
     
     
@@ -39,20 +41,25 @@ const studentsSchema = new Schema ({
     },
     languages: {
         type: [String],
-        enum: ["English", "Spanish", "French", "German", "Portuguese", "Dutch", "Other"]
+        enum: ["English", "Spanish", "French", "German", "Portuguese", "Dutch", "Other"],
     },
     image: {
         type: String,
-        default: "https://i.imgur.com/r8bo8u7.png" //devo inserir imagem aqui?
+        default: "https://i.imgur.com/r8bo8u7.png",
+      },
+      booking: [
+        {
+          type: Schema.Types.ObjectId, 
+          ref: "Booking",
+        },
+      ],
+      isActive: {
+        type: Boolean,
+        default: true,
+      },
+    
     },
-    booking:[{
-        type: Schema.Types.ObjectId, 
-        ref: "Booking",
-            },
-        ],
-    },
-
-    {
+{
         // this second object adds extra properties: `createdAt` and `updatedAt`
         timestamps: true,  
   

@@ -2,6 +2,7 @@ const { req, res } = require("express");
 const Booking = require("../models/Booking.model");
 const mongoose = require('mongoose');
 const Student = require ('../models/Student.model');
+const Class = require ('../models/Class.model')
 const router = require('express').Router();
 
 
@@ -10,18 +11,17 @@ const router = require('express').Router();
 //  GET  /api/bookings - Retrieve all bookings from the database collection
 router.get("/", (req, res, next) => {
   Booking.find({})
-      .populate('student', 'firstName lastName email')
-      .populate('class', 'name schedule') 
-      .then((bookings) => {
-          console.log("Retrieved bookings ->", bookings);
-          res.status(200).json(bookings);
-      })
-      .catch((error) => {
-          console.error("Error while retrieving bookings ->", error);
-          next(error);
-      });
+  .populate('student', 'firstName lastName email') 
+  .populate('class', 'name schedule') 
+  .then((bookings) => {
+    console.log("Retrieved bookings ->", bookings);
+    res.status(200).json(bookings);
+  })
+  .catch((error) => {
+    console.error("Error while retrieving bookings ->", error);
+    next(error);
+  });
 });
-
 
 // GET /:bookingId - Retrieves a specific booking by id
 router.get('/:bookingId', async (req, res, next) => {
@@ -45,28 +45,49 @@ router.get('/:bookingId', async (req, res, next) => {
 
 // POST /api/bookings - Creates a new booking
 router.post('/', async (req, res, next) => {
-  const { student, class: classId, date, status } = req.body;
-  
+  const { student, class: classId, date, status = "confirmed" } = req.body;
+
+  // Validação IDs
   if (!mongoose.isValidObjectId(student) || !mongoose.isValidObjectId(classId)) {
     return res.status(400).json({ message: "Invalid Student ID or Class ID" });
   }
 
+  // olha s estudan e aulas existem n banco de d
   try {
+    const existingStudent = await Student.findById(student);
+    const existingClass = await Class.findById(classId);
+
+    if (!existingStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    if (!existingClass) {
+      return res.status(404).json({ message: "Class not found" });
+    }
+
+    // Valida data
+    if (!date || isNaN(new Date(date))) {
+      return res.status(400).json({ message: "Invalid date format" });
+    }
+
+    // Criação da reserva
     const createdBooking = await Booking.create({
-        student: req.body.student,
-        class: req.body.class,
-        date: req.body.date,
-        status: req.body.status,
+      student,
+      class: classId,
+      date,
+      status,
     });
 
-    console.log("Booking added ->", createdBooking);
-
-    res.status(201).json(createdBooking);
-} catch (error) {
+    res.status(201).json({
+      message: "Booking successfully created",
+      booking: createdBooking,
+    });
+  } catch (error) {
     console.error("Error while creating the booking ->", error);
-    next(error); 
-}
+    next(error);
+  }
 });
+
 
 // POST /api/bookings - Creates a new booking
     /* const {studentId, classId, date } = req.body;
