@@ -1,7 +1,8 @@
 const { req, res } = require("express");
 const Class = require("../models/Class.model");
 const mongoose = require('mongoose');
-/* const Student = require('../models/Student.model') */  // ele mandou botar isso aqui
+const Student = require('../models/Student.model');
+const Booking = require('../models/Booking.model');
 const router = require('express').Router();
 
 
@@ -90,30 +91,36 @@ router.put('/:classId', async (req, res, next) => {
 //* GET /api/classes/:classId/bookings - Retrieves all bookings for a specific class - detalhes das reservas como data, horario
 router.get('/:classId/bookings', async (req, res, next) => {
     const { classId } = req.params;
-    if (mongoose.isValidObjectId(classId)) {
-      try {
-        const bookings = await Booking.find({ class: classId }).populate('student', 'firstName lastName email').populate('class', 'name schedule'); 
-        if (!bookings.length) {
-          return res.status(404).json({ message: "No bookings found for this class" });
-        }
 
-        // Retorna a lista de estudantes e o número total  //.json(bookings);
-        res.status(200).json({
-          bookings: bookings.map((booking) => ({
-            student: booking.student,
-            date: booking.date,
-            status: booking.status,
-          })),
-          totalBookings: bookings.length,
-        });
-      } catch (error) {
-        console.error('Error retrieving bookings for class ->', error);
-        next(error);
-      }
-    } else {
-      res.status(400).json({ message: "Invalid Class ID" });
+    if (!mongoose.isValidObjectId(classId)) {
+    return res.status(400).json({ message: "Invalid Class ID" });
+  }
+
+  try {
+    const bookings = await Booking.find({ class: classId })
+      .populate('student', 'firstName lastName email')
+      .populate('class', 'name schedule');
+
+    
+    if (!bookings.length) {
+      return res.status(404).json({ message: "No bookings found for this class" });
     }
-  });
+
+    res.status(200).json({
+      bookings: bookings.map((booking) => ({
+        student: booking.student,
+        class: booking.class.name,
+        schedule: booking.class.schedule,
+        date: booking.date,
+        status: booking.status,
+      })),
+      totalBookings: bookings.length,
+    });
+  } catch (error) {
+    console.error('Error retrieving bookings for class ->', error.message);
+    next(error);
+  }
+});
   
 
                                                                                             //esses dois nao sao a mesma coisa? - sao bem parecidos, tvz juntar as rotas?
@@ -142,26 +149,29 @@ router.get('/:classId/bookings', async (req, res, next) => {
 
 // POST /api/classes/:classId/bookings - Creates a new booking for a specific class //modificar o código
 router.post('/:classId/bookings', async (req, res, next) => {
-    const { classId } = req.params; //catar
-    const { studentId, date } = req.body; //catar
-    if (mongoose.isValidObjectId(classId) && mongoose.isValidObjectId(studentId)) {
-      try {
-        const newBooking = new Booking({
-          student: studentId,
-          class: classId,
-          date,
-        });
-        const savedBooking = await newBooking.save();
-        res.status(201).json(savedBooking);
-      } catch (error) {
-        console.log(error);
-        next(error);
-      }
-    } else {
-      res.status(400).json({ message: "Invalid Class Id or student Id" });
-    }
-  });
-  
+  const { classId } = req.params; 
+  const { studentId, date } = req.body; 
+
+  if (!mongoose.isValidObjectId(classId) || !mongoose.isValidObjectId(studentId)) {
+    return res.status(400).json({ message: "Invalid Class ID or Student ID" });
+  }
+
+  try {
+    const newBooking = new Booking({
+      student: studentId,
+      class: classId,
+      date,
+    });
+
+    const savedBooking = await newBooking.save();
+    res.status(201).json(savedBooking);
+  } catch (error) {
+    console.error("Error creating booking ->", error);
+    next(error);
+  }
+});
+
+
 
 // DELETE /api/classes/:classId - Deletes a specific class by id
 router.delete('/:classId', async (req, res, next) => {

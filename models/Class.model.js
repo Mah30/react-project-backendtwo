@@ -6,10 +6,10 @@ const ClassSchema = new Schema ({
         required: true, 
         type: String,
     },
-    instructor: {
+    /* instructor: {
         type: Schema.Types.ObjectId, 
-        ref: "Instructor",        // perguntar se tenho que criar um model de instrutor      
-    },
+        ref: "Instructor",        
+    }, */
     capacity: {
         required: true, //capacidade máxima de alunos
         type: Number,
@@ -19,13 +19,16 @@ const ClassSchema = new Schema ({
         type:[{ type: Date }], 
         required: true,
     },
-     
+    duration: {
+        required: true,
+        type: Number,
+    },  
     bookings: [
-        { type: Schema.Types.ObjectId, ref: "Booking" }
+        { type: Schema.Types.ObjectId, 
+            ref: "Booking" },
     ],
     
-
-})
+});
 
 // CREATE MODEL, it changes to plural alone 
 const Class = mongoose.model('Class', ClassSchema)
