@@ -1,7 +1,7 @@
 const { req, res } = require("express");
 const Class = require("../models/Class.model");
 const mongoose = require('mongoose');
-const Student = require('../models/Student.model')  // ele mandou botar isso aqui
+/* const Student = require('../models/Student.model') */  // ele mandou botar isso aqui
 const router = require('express').Router();
 
 
@@ -10,7 +10,7 @@ const router = require('express').Router();
 //  GET  /api/classes - Retrieve all classes from the database collection
 router.get("/", (req, res, next) => {
     Class.find({})
-        /* .populate("cohort") */ //ver se precisa populate aqui
+         .populate("bookings") 
         .then((classes) => {
             console.log("Retrieved classes ->", classes);
   
@@ -28,17 +28,17 @@ router.get('/:classId', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
-        const oneClass = await Class.findById(classId).populate('bookings');
+        const oneClass = await Class.findById(classId).populate('bookings', 'student date status');
         if (!oneClass) {
-          return res.status(404).json({ message: "Class not found" });
+          return res.status(404).json({ message: 'Class not found' });
         }
         res.status(200).json(oneClass);
       } catch (error) {
-        console.log(error);
+        console.error('Error retrieving class ->', error);
         next(error);
       }
     } else {
-      res.status(400).json({ message: "Invalid Id" });
+      res.status(400).json({ message: 'Invalid Class ID' });
     }
   });
 
@@ -48,10 +48,8 @@ router.post('/', async (req, res, next) => {
     try {
         const createdClass = await Class.create({
             name: req.body.name,
-            instructor: req.body.instructor,
             capacity: req.body.capacity,
             schedule: req.body.schedule,
-            image: req.body.image,
             duration: req.body.duration,
             bookings: req.body.bookings,
         });
@@ -64,7 +62,6 @@ router.post('/', async (req, res, next) => {
         next(error); 
     }
 });
-
 
 
 // PUT /api/classes/:classId - Updates a specific class by id
@@ -85,7 +82,7 @@ router.put('/:classId', async (req, res, next) => {
         next(error);
       }
     } else {
-      res.status(400).json({ message: "Invalid Id" });
+      res.status(400).json({ message: "Invalid Class Id" });
     }
   });
 
@@ -102,15 +99,19 @@ router.get('/:classId/bookings', async (req, res, next) => {
 
         // Retorna a lista de estudantes e o número total  //.json(bookings);
         res.status(200).json({
-          students: bookings.map((booking) => booking.student),
-          totalStudents: bookings.length,
+          bookings: bookings.map((booking) => ({
+            student: booking.student,
+            date: booking.date,
+            status: booking.status,
+          })),
+          totalBookings: bookings.length,
         });
       } catch (error) {
-        console.log(error);
+        console.error('Error retrieving bookings for class ->', error);
         next(error);
       }
     } else {
-      res.status(400).json({ message: "Invalid Class Id" });
+      res.status(400).json({ message: "Invalid Class ID" });
     }
   });
   
@@ -118,7 +119,7 @@ router.get('/:classId/bookings', async (req, res, next) => {
                                                                                             //esses dois nao sao a mesma coisa? - sao bem parecidos, tvz juntar as rotas?
 
 //* GET /api/classes/:classId/students - Retrieves all students booked for a specific class - quais alunos reservaram uma aula
-router.get('/:classId/students', async (req, res, next) => {
+/* router.get('/:classId/students', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -135,7 +136,7 @@ router.get('/:classId/students', async (req, res, next) => {
     } else {
       res.status(400).json({ message: "Invalid Class Id" });
     }
-  });
+  }); */
 
 
 

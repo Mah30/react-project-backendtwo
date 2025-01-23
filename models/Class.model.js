@@ -15,15 +15,13 @@ const ClassSchema = new Schema ({
         type: Number,
 
     },
-    schedule: {
-        type: [Date],   //Datas e horários disponíveis
-    },
-    duration: {
+    schedule: { 
+        type:[{ type: Date }], 
         required: true,
-        type: Number,
-    }, 
-    bookings:[
-        { type: mongoose.Schema.Types.ObjectId, ref: "Booking" }
+    },
+     
+    bookings: [
+        { type: Schema.Types.ObjectId, ref: "Booking" }
     ]
 
 })

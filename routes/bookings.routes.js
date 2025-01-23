@@ -5,6 +5,7 @@ const Student = require ('../models/Student.model');
 const router = require('express').Router();
 
 
+/* bookings ROUTES */
 
 //  GET  /api/bookings - Retrieve all bookings from the database collection
 router.get("/", (req, res, next) => {
