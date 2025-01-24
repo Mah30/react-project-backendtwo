@@ -11,16 +11,22 @@ const isAuthenticated = (req, res, next) => {
 
       const payload = jwt.verify(token, process.env.TOKEN_SECRET) // decode token and get payload
   
-      req.tokenPayload = payload // to pass the decoded payload to the next route
-      next()
+      req.tokenPayload = payload; // to pass the decoded payload to the next route
+      next();
     } catch (error) {
         console.error('Authentication error:', error.message);
       // the middleware will catch error and send 401 if: There is no token , Token is invalid, There is no headers or authorization in req (no token)
       if (error.name === 'TokenExpiredError') {
+
       console.error('Authentication error:', error.message);
-      
-      res.status(401).json({ message: 'token not provided or not valid'})
+      return res.status(401).json({ message: 'Token expired' });
+
+     /*  res.status(401).json({ message: 'token not provided or not valid'}) */
+    } else if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
     }
+    
+    res.status(500).json({ message: 'Internal server error during authentication' });
   }
 }
   module.exports = { isAuthenticated };

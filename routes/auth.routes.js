@@ -76,9 +76,7 @@ router.post('/login', async (req, res, next) => {
         } else {
           res.status(403).json({ message: 'Incorrect password' })
         }
-      } else {
-        res.status(400).json({ message: 'No student with this email' })
-      }
+      } 
     } catch (error) {
       next(error);
     }
@@ -87,17 +85,18 @@ router.post('/login', async (req, res, next) => {
 
   // GET /api/auth/verify - Rota de Verificação
   router.get('/verify', isAuthenticated, async (req, res, next) => {
-    
+
     try {
-         // Obtém o usuário atual de ac c/ ID do tokken
-      const currentStudent = await Student.findById(req.tokenPayload.studentId)
+      // Obtém o usuário atual de acordo com o ID do token
+      const currentStudent = await Student.findById(req.tokenPayload.studentId);
       if (!currentStudent) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-      res.json(currentStudent)
-    } catch (error) {
-      next(error)
-    }
+          return res.status(404).json({ message: 'Student not found' });
+      }
+      res.status(200).json(currentStudent);
+  } catch (error) {
+      console.error('Error during verification:', error.message);
+      next(error);
+  }
   })
   
   module.exports = router
