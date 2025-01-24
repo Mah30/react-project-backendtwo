@@ -8,10 +8,10 @@ const { isAuthenticated } = require('../middlewares/route-guard.middleware');
 
 // POST /api/auth/signup - Rota de Cadastro
   router.post("/signup", async (req, res, next) => {
-    const { firstName, lastName, email, password } = req.body; 
+    const { firstName, lastName, email, password, age, phone } = req.body; 
 
     // Validação básica de entrada
-    if (!firstName || !lastName  || !email || !password) {
+    if (!firstName || !lastName  || !email || !password || !age || !phone) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -30,6 +30,8 @@ const { isAuthenticated } = require('../middlewares/route-guard.middleware');
       const newStudent = await Student.create({ 
         firstName,
         lastName,
+        age,
+        phone,
         email,
         passwordHash, 
       });
@@ -62,14 +64,14 @@ router.post('/login', async (req, res, next) => {
 
       if (potentialStudent) {
         // Check the password
-        if (bcrypt.compareSync(credentials.password, potentialStudent.passwordHash)) {
+        if (bcrypt.compareSync(password, potentialStudent.passwordHash)) {
         
           // The user has the right credentials
           const payload = { studentId: potentialStudent._id }
           const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
             algorithm: 'HS256',
             expiresIn: '6h',
-          })
+          });
           res.json({ token: authToken })
         } else {
           res.status(403).json({ message: 'Incorrect password' })
