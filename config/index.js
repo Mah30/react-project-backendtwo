@@ -3,13 +3,13 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
-const FRONTEND_URL = process.env.ORIGIN || 'http://localhost:5173';
+const FRONTEND_URL = process.env.ORIGIN || 'http://localhost:5175';
 
 
 // Middleware configuration
 module.exports = app => {
   app.set('trust proxy', 1);
-  app.use(cors({ origin: [FRONTEND_URL] }));
+  app.use(cors({ origin: [FRONTEND_URL], credentials: true, }));
   app.use(logger('dev'));
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));

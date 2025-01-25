@@ -17,7 +17,7 @@ const studentsSchema = new Schema ({
         type: String
     },
     age: {
-        required: true,
+        required: false,
         type: Number
     },
 
@@ -36,7 +36,7 @@ const studentsSchema = new Schema ({
     
     
     phone: {
-        required: true,
+        required: false,
         type: Number
     },
     languages: {

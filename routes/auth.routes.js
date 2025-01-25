@@ -11,7 +11,7 @@ const { isAuthenticated } = require('../middlewares/route-guard.middleware');
     const { firstName, lastName, email, password, age, phone } = req.body; 
 
     // Validação básica de entrada
-    if (!firstName || !lastName  || !email || !password || !age || !phone) {
+    if (!firstName || !lastName  || !email || !password ) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
