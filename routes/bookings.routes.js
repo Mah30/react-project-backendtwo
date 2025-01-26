@@ -24,6 +24,7 @@ const router = require('express').Router();
   });
 }); */
 
+
 // GET /:bookingId - Retrieves a specific booking by id
 router.get('/:bookingId', isAuthenticated, async (req, res, next) => {
   const {bookingId} = req.params;
@@ -46,6 +47,29 @@ router.get('/:bookingId', isAuthenticated, async (req, res, next) => {
     res.status(400).json({ message: "Invalid Booking Id" });
   }
 });
+
+
+// GET /api/bookings/student - Retrieves all bookings for the authenticated student
+router.get('/student', isAuthenticated, async (req, res, next) => {
+  try {
+    const studentId = req.tokenPayload.studentId;
+
+    // Encontra todas as reservas do estudante autenticado
+    const bookings = await Booking.find({ student: studentId })
+      .populate('class', 'name schedule duration') 
+      .populate('student', 'firstName lastName email'); 
+
+    if (!bookings.length) {
+      return res.status(404).json({ message: "No bookings found for this student" });
+    }
+
+    res.status(200).json(bookings); // Retorna todas as reservas do estudante
+  } catch (error) {
+    console.error('Error retrieving student bookings ->', error.message);
+    next(error);
+  }
+});
+
 
 
 // POST /api/bookings - Creates a new booking
