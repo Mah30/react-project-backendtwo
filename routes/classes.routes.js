@@ -3,6 +3,7 @@ const Class = require("../models/Class.model");
 const mongoose = require('mongoose');
 const Student = require('../models/Student.model');
 const Booking = require('../models/Booking.model');
+const { isAuthenticated } = require("../middlewares/route-guard.middleware");
 const router = require('express').Router();
 
 
@@ -45,7 +46,7 @@ router.get('/:classId', async (req, res, next) => {
 
 
 // POST /api/classes - Creates a new class
-router.post('/', async (req, res, next) => {
+/* router.post('/', async (req, res, next) => {
     try {
         const createdClass = await Class.create({
             name: req.body.name,
@@ -62,11 +63,11 @@ router.post('/', async (req, res, next) => {
         console.error("Error while creating the class ->", error);
         next(error); 
     }
-});
+}); */
 
 
 // PUT /api/classes/:classId - Updates a specific class by id
-router.put('/:classId', async (req, res, next) => {
+/* router.put('/:classId', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -85,11 +86,11 @@ router.put('/:classId', async (req, res, next) => {
     } else {
       res.status(400).json({ message: "Invalid Class Id" });
     }
-  });
+  }); */
 
 
 //* GET /api/classes/:classId/bookings - Retrieves all bookings for a specific class - detalhes das reservas como data, horario
-router.get('/:classId/bookings', async (req, res, next) => {
+/* router.get('/:classId/bookings', async (req, res, next) => {
     const { classId } = req.params;
 
     if (!mongoose.isValidObjectId(classId)) {
@@ -120,7 +121,7 @@ router.get('/:classId/bookings', async (req, res, next) => {
     console.error('Error retrieving bookings for class ->', error.message);
     next(error);
   }
-});
+}); */
   
 
                                                                                             //esses dois nao sao a mesma coisa? - sao bem parecidos, tvz juntar as rotas?
@@ -148,12 +149,16 @@ router.get('/:classId/bookings', async (req, res, next) => {
 
 
 // POST /api/classes/:classId/bookings - Creates a new booking for a specific class //modificar o código
-router.post('/:classId/bookings', async (req, res, next) => {
+router.post('/:classId/bookings', isAuthenticated, async (req, res, next) => {
   const { classId } = req.params; 
   const { studentId, date } = req.body; 
 
   if (!mongoose.isValidObjectId(classId) || !mongoose.isValidObjectId(studentId)) {
     return res.status(400).json({ message: "Invalid Class ID or Student ID" });
+  }
+
+  if (student != req.tokenPayload.studentId) {
+    return res.status(403).json({ message: "You cannot create a booking for another student!"});
   }
 
   try {
@@ -174,7 +179,7 @@ router.post('/:classId/bookings', async (req, res, next) => {
 
 
 // DELETE /api/classes/:classId - Deletes a specific class by id
-router.delete('/:classId', async (req, res, next) => {
+/* router.delete('/:classId', async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -190,7 +195,7 @@ router.delete('/:classId', async (req, res, next) => {
     } else {
       res.status(400).json({ message: "Invalid Class Id" });
     }
-  });
+  }); */
   
 
   module.exports = router;

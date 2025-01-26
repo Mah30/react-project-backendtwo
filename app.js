@@ -19,15 +19,14 @@ const PORT = process.env.PORT  || 3000;
 
 /* Routes */
 // 👇 Start handling routes here
-const indexRoutes = require('./routes/index.routes')
-app.use('/api', indexRoutes) 
-
 
 //rotas de autenticacao
 const authRoutes = require('./routes/auth.routes');
 const { error } = require("console");
 app.use('/auth', authRoutes)
 
+const indexRoutes = require('./routes/index.routes')
+app.use('/api', indexRoutes) 
 
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes

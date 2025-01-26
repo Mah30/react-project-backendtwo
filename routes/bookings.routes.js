@@ -2,14 +2,15 @@ const { req, res } = require("express");
 const Booking = require("../models/Booking.model");
 const mongoose = require('mongoose');
 const Student = require ('../models/Student.model');
-const Class = require ('../models/Class.model')
+const Class = require ('../models/Class.model');
+const { isAuthenticated } = require("../middlewares/route-guard.middleware");
 const router = require('express').Router();
 
 
 /* bookings ROUTES */
 
 //  GET  /api/bookings - Retrieve all bookings from the database collection
-router.get("/", (req, res, next) => {
+/* router.get("/", (req, res, next) => {
   Booking.find({})
   .populate('student', 'firstName lastName email') 
   .populate('class', 'name schedule') 
@@ -21,21 +22,25 @@ router.get("/", (req, res, next) => {
     console.error("Error while retrieving bookings ->", error);
     next(error);
   });
-});
+}); */
 
 // GET /:bookingId - Retrieves a specific booking by id
-router.get('/:bookingId', async (req, res, next) => {
-    const {bookingId} = req.params;
-    if (mongoose.isValidObjectId(bookingId)) {
-        try {
-            const booking = await Booking.findById(bookingId).populate('student', 'firstName lastName email').populate('class', 'name schedule');
-            if (!booking) {
-                return res.status(404).json({ message: "Booking not found" });
+router.get('/:bookingId', isAuthenticated, async (req, res, next) => {
+  const {bookingId} = req.params;
+  if (mongoose.isValidObjectId(bookingId)) {
+    try {
+      const booking = await Booking.findById(bookingId).populate('student', 'firstName lastName email').populate('class', 'name schedule');
+      if (!booking) {
+          return res.status(404).json({ message: "Booking not found" });
       }
-      res.status(200).json(booking);
-    }   catch (error) {
-            console.log(error);
-            next(error);
+      if (booking.student == req.tokenPayload.studentId) {
+        res.status(200).json(booking);
+      } else {
+        res.status(403).json({ message: "You cannot access a booking by another student. "});
+      }
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
   } else {
     res.status(400).json({ message: "Invalid Booking Id" });
@@ -44,12 +49,16 @@ router.get('/:bookingId', async (req, res, next) => {
 
 
 // POST /api/bookings - Creates a new booking
-router.post('/', async (req, res, next) => {
+router.post('/', isAuthenticated, async (req, res, next) => {
   const { student, class: classId, date, status = "confirmed" } = req.body;
 
   // Validação IDs
   if (!mongoose.isValidObjectId(student) || !mongoose.isValidObjectId(classId)) {
     return res.status(400).json({ message: "Invalid Student ID or Class ID" });
+  }
+
+  if (student != req.tokenPayload.studentId) {
+    return res.status(403).json({ message: "You cannot create a booking for another student!"});
   }
 
   // olha s estudan e aulas existem n banco de d
@@ -89,33 +98,25 @@ router.post('/', async (req, res, next) => {
 });
 
 
-// POST /api/bookings - Creates a new booking
-    /* const {studentId, classId, date } = req.body;
-    if (mongoose.isValidObjectId(studentId) && mongoose.isValidObjectId(classId)) {
-     
-      try {
-        const createdBooking = new Booking({
-          student: studentId,
-          class: classId,
-          date,
-        });
-        const savedBooking = await createdBooking.save();
-        res.status(201).json(savedBooking);
-      } catch (error) {
-        console.log(error);
-        next(error);
-      }
-    } else {
-      res.status(400).json({ message: "Invalid Student Id or Class Id" });
-    } */
-
-
-
 // PUT /api/booking/:bookingId - Updates a specific booking by id
-router.put('/:bookingId', async (req, res, next) => {
+router.put('/:bookingId', isAuthenticated, async (req, res, next) => {
     const { bookingId } = req.params;
+
+    if (req.body.student != req.tokenPayload.studentId) {
+      return res.status(403).json({ message: "Cannot change the booking to another student." })
+    }
+
     if (mongoose.isValidObjectId(bookingId)) {
       try {
+        const booking = await Booking.findById(bookingId);
+        if (!booking) {
+          return res.status(404).json({ message: "Booking not found" });
+        }
+
+        if (booking.student != req.tokenPayload.studentId) {
+          return res.status(403).json({ message: "Cannot update the bookings of another student" })
+        }
+
         const updatedBooking = await Booking.findByIdAndUpdate(bookingId, req.body, { new: true });
         if (!updatedBooking) {
           return res.status(404).json({ message: "Booking not found" });
@@ -133,10 +134,19 @@ router.put('/:bookingId', async (req, res, next) => {
 
 
 // DELETE /:bookingId - Deletes a specific booking by id
-router.delete('/:bookingId', async (req, res, next) => {
+router.delete('/:bookingId', isAuthenticated, async (req, res, next) => {
     const { bookingId } = req.params;
     if (mongoose.isValidObjectId(bookingId)) {
       try {
+        const booking = await Booking.findById(bookingId);
+        if (!booking) {
+          return res.status(404).json({ message: "Booking not found" });
+        }
+
+        if (booking.student != req.tokenPayload.studentId) {
+          return res.status(403).json({ message: "Cannot delete the bookings of another student" })
+        }
+
         const deletedBooking = await Booking.findByIdAndDelete(bookingId);
         if (!deletedBooking) {
           return res.status(404).json({ message: "Booking not found" });
