@@ -26,7 +26,7 @@ router.get("/", (req, res, next) => {
 
 
 // GET /api/classes/:classId - Retrieves a specific class by id
-router.get('/:classId', async (req, res, next) => {
+router.get('/:classId', isAuthenticated, async (req, res, next) => {
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -46,7 +46,10 @@ router.get('/:classId', async (req, res, next) => {
 
 
 // POST /api/classes - Creates a new class
-/* router.post('/', async (req, res, next) => {
+router.post('/', isAuthenticated, async (req, res, next) => {
+  if (!req.tokenPayload.isAdmin) {
+    return res.status(403).json({ message: "Need admin permissions" });
+  }
     try {
         const createdClass = await Class.create({
             name: req.body.name,
@@ -63,11 +66,14 @@ router.get('/:classId', async (req, res, next) => {
         console.error("Error while creating the class ->", error);
         next(error); 
     }
-}); */
+});
 
 
 // PUT /api/classes/:classId - Updates a specific class by id
-/* router.put('/:classId', async (req, res, next) => {
+router.put('/:classId', isAuthenticated, async (req, res, next) => {
+  if (!req.tokenPayload.isAdmin) {
+    return res.status(403).json({ message: "Need admin permissions" });
+  }
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -86,11 +92,14 @@ router.get('/:classId', async (req, res, next) => {
     } else {
       res.status(400).json({ message: "Invalid Class Id" });
     }
-  }); */
+  });
 
 
 //* GET /api/classes/:classId/bookings - Retrieves all bookings for a specific class - detalhes das reservas como data, horario
-/* router.get('/:classId/bookings', async (req, res, next) => {
+router.get('/:classId/bookings', isAuthenticated, async (req, res, next) => {
+  if (!req.tokenPayload.isAdmin) {
+    return res.status(403).json({ message: "Need admin permissions" });
+  }
     const { classId } = req.params;
 
     if (!mongoose.isValidObjectId(classId)) {
@@ -121,7 +130,7 @@ router.get('/:classId', async (req, res, next) => {
     console.error('Error retrieving bookings for class ->', error.message);
     next(error);
   }
-}); */
+});
   
 
                                                                                             //esses dois nao sao a mesma coisa? - sao bem parecidos, tvz juntar as rotas?
@@ -157,7 +166,7 @@ router.post('/:classId/bookings', isAuthenticated, async (req, res, next) => {
     return res.status(400).json({ message: "Invalid Class ID or Student ID" });
   }
 
-  if (student != req.tokenPayload.studentId) {
+  if (!(student == req.tokenPayload.studentId || req.tokenPayload.isAdmin)) {
     return res.status(403).json({ message: "You cannot create a booking for another student!"});
   }
 
@@ -179,7 +188,10 @@ router.post('/:classId/bookings', isAuthenticated, async (req, res, next) => {
 
 
 // DELETE /api/classes/:classId - Deletes a specific class by id
-/* router.delete('/:classId', async (req, res, next) => {
+router.delete('/:classId', isAuthenticated, async (req, res, next) => {
+  if (!req.tokenPayload.isAdmin) {
+    return res.status(403).json({ message: "Need admin permissions" });
+  }
     const { classId } = req.params;
     if (mongoose.isValidObjectId(classId)) {
       try {
@@ -195,7 +207,7 @@ router.post('/:classId/bookings', isAuthenticated, async (req, res, next) => {
     } else {
       res.status(400).json({ message: "Invalid Class Id" });
     }
-  }); */
+  });
   
 
   module.exports = router;

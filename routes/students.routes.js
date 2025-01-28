@@ -11,7 +11,10 @@ const router = require('express').Router();
 /* students ROUTES */
 
 //  GET  /api/students - Retrieve all students from the database collection
-/* router.get("/", (req, res, next) => {
+router.get("/", isAuthenticated, (req, res, next) => {
+  if (!req.tokenPayload.isAdmin) {
+    return res.status(403).json({ message: "Need admin permissions" });
+  }
     Student.find({})
         .then((students) => {
             console.log("Retrieved students ->", students);
@@ -21,14 +24,14 @@ const router = require('express').Router();
             console.error("Error while retrieving students ->", error);
             next(error);
         });
-}); */
+});
 
 
 //GET api/students/:studentId - Retrieves a specific student by id
 router.get('/:studentId', isAuthenticated, async (req, res, next) => {
     const {studentId} = req.params
 
-    if (studentId != req.tokenPayload.studentId) {
+    if (!(studentId == req.tokenPayload.studentId || req.tokenPayload.isAdmin)) {
       return res.status(403).json({ message: "You cannot see the data of other students!"});
     }
 
@@ -52,7 +55,10 @@ router.get('/:studentId', isAuthenticated, async (req, res, next) => {
 
 
 //POST /api/students - Creates a new student //essa rota do codigo ta certa?
-/* router.post('/', async (req, res, next) => {
+router.post('/', isAuthenticated, async (req, res, next) => {
+  if (!req.tokenPayload.isAdmin) {
+    return res.status(403).json({ message: "Need admin permissions" });
+  }
     try {
         const createdStudent = await Student.create({
             firstName: req.body.firstName,
@@ -74,14 +80,14 @@ router.get('/:studentId', isAuthenticated, async (req, res, next) => {
         console.error("Error while creating the student ->", error);
         next(error); 
     }
-}); */
+});
 
 
 //PUT api/students/:studentId - Updates a specific student by id
 router.put('/:studentId', isAuthenticated, async (req, res, next) => {
     const { studentId } = req.params;
 
-    if (studentId != req.tokenPayload.studentId) {
+    if (!(studentId == req.tokenPayload.studentId || req.tokenPayload.isAdmin)) {
       return res.status(403).json({ message: "You cannot change the data of another student!"});
     }
 
@@ -130,7 +136,7 @@ router.put('/:studentId', isAuthenticated, async (req, res, next) => {
 router.get('/:studentId/bookings', isAuthenticated, async (req, res, next) => {
   const { studentId } = req.params;
 
-  if (studentId != req.tokenPayload.studentId) {
+  if (!(studentId == req.tokenPayload.studentId || req.tokenPayload.isAdmin)) {
     return res.status(403).json({ message: "You cannot see the bookings of another student!"});
   }
 
@@ -152,7 +158,10 @@ router.get('/:studentId/bookings', isAuthenticated, async (req, res, next) => {
 
 
 //DELETE api/students/:studentId
-/* router.delete('/:studentId', async (req, res, next) => {
+router.delete('/:studentId', async (req, res, next) => {
+  if (!req.tokenPayload.isAdmin) {
+    return res.status(403).json({ message: "Need admin permissions" });
+  }
     const {studentId} = req.params
     if (mongoose.isValidObjectId(studentId)) {
       try {
@@ -164,7 +173,7 @@ router.get('/:studentId/bookings', isAuthenticated, async (req, res, next) => {
     } else {
       res.status(400).json({ message: 'invalid id' })
     }
-  }); */
+  });
   
 
 

@@ -10,7 +10,11 @@ const router = require('express').Router();
 /* bookings ROUTES */
 
 //  GET  /api/bookings - Retrieve all bookings from the database collection
-/* router.get("/", (req, res, next) => {
+ router.get("/", isAuthenticated, (req, res, next) => {
+  if (!req.tokenPayload.isAdmin) {
+    return res.status(403).json({ message: "Need admin permissions" });
+  }
+
   Booking.find({})
   .populate('student', 'firstName lastName email') 
   .populate('class', 'name schedule') 
@@ -22,36 +26,13 @@ const router = require('express').Router();
     console.error("Error while retrieving bookings ->", error);
     next(error);
   });
-}); */
-
-
-// GET /:bookingId - Retrieves a specific booking by id
-router.get('/:bookingId', isAuthenticated, async (req, res, next) => {
-  const {bookingId} = req.params;
-  if (mongoose.isValidObjectId(bookingId)) {
-    try {
-      const booking = await Booking.findById(bookingId).populate('student', 'firstName lastName email').populate('class', 'name schedule');
-      if (!booking) {
-          return res.status(404).json({ message: "Booking not found" });
-      }
-      if (booking.student == req.tokenPayload.studentId) {
-        res.status(200).json(booking);
-      } else {
-        res.status(403).json({ message: "You cannot access a booking by another student. "});
-      }
-    } catch (error) {
-      console.log(error);
-      next(error);
-    }
-  } else {
-    res.status(400).json({ message: "Invalid Booking Id" });
-  }
 });
 
 
 // GET /api/bookings/student - Retrieves all bookings for the authenticated student
 router.get('/student', isAuthenticated, async (req, res, next) => {
   try {
+    console.log("tou aqui");
     const studentId = req.tokenPayload.studentId;
 
     // Encontra todas as reservas do estudante autenticado
@@ -68,20 +49,47 @@ router.get('/student', isAuthenticated, async (req, res, next) => {
     console.error('Error retrieving student bookings ->', error.message);
     next(error);
   }
-});
+}); 
 
+
+// GET /:bookingId - Retrieves a specific booking by id
+router.get('/:bookingId', isAuthenticated, async (req, res, next) => {
+  const {bookingId} = req.params;
+  if (mongoose.isValidObjectId(bookingId)) {
+    try {
+      const booking = await Booking.findById(bookingId).populate('student', 'firstName lastName email').populate('class', 'name schedule');
+      if (!booking) {
+          return res.status(404).json({ message: "Booking not found" });
+      }
+      if (booking.student == req.tokenPayload.studentId || req.tokenPayload.isAdmin) {
+        res.status(200).json(booking);
+      } else {
+        res.status(403).json({ message: "You cannot access a booking by another student. "});
+      }
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  } else {
+    res.status(400).json({ message: "Invalid Booking Id" });
+  }
+});
 
 
 // POST /api/bookings - Creates a new booking
 router.post('/', isAuthenticated, async (req, res, next) => {
+  console.log("Request Body:", req.body);
+  
   const { student, class: classId, date, status = "confirmed" } = req.body;
+
+
 
   // Validação IDs
   if (!mongoose.isValidObjectId(student) || !mongoose.isValidObjectId(classId)) {
     return res.status(400).json({ message: "Invalid Student ID or Class ID" });
   }
 
-  if (student != req.tokenPayload.studentId) {
+  if (!(student == req.tokenPayload.studentId || req.tokenPayload.isAdmin)) {
     return res.status(403).json({ message: "You cannot create a booking for another student!"});
   }
 
@@ -126,7 +134,7 @@ router.post('/', isAuthenticated, async (req, res, next) => {
 router.put('/:bookingId', isAuthenticated, async (req, res, next) => {
     const { bookingId } = req.params;
 
-    if (req.body.student != req.tokenPayload.studentId) {
+    if (!(req.body.student == req.tokenPayload.studentId || req.tokenPayload.isAdmin)) {
       return res.status(403).json({ message: "Cannot change the booking to another student." })
     }
 
@@ -137,7 +145,7 @@ router.put('/:bookingId', isAuthenticated, async (req, res, next) => {
           return res.status(404).json({ message: "Booking not found" });
         }
 
-        if (booking.student != req.tokenPayload.studentId) {
+        if (!(booking.student == req.tokenPayload.studentId || req.tokenPayload.isAdmin)) {
           return res.status(403).json({ message: "Cannot update the bookings of another student" })
         }
 
@@ -167,7 +175,7 @@ router.delete('/:bookingId', isAuthenticated, async (req, res, next) => {
           return res.status(404).json({ message: "Booking not found" });
         }
 
-        if (booking.student != req.tokenPayload.studentId) {
+        if (!(booking.student == req.tokenPayload.studentId || req.tokenPayload.isAdmin)) {
           return res.status(403).json({ message: "Cannot delete the bookings of another student" })
         }
 

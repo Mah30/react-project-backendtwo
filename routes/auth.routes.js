@@ -49,7 +49,7 @@ const { isAuthenticated } = require('../middlewares/route-guard.middleware');
   // POST /auth/login - Rota de Login
 router.post('/login', async (req, res, next) => {
 
-  const { email, password } = req.body // { username: '...', password: '...'} //talvez preciso substituir a credencial por username e passwort
+  const { email, password } = req.body 
   
         // Validação básica de entrada
     if (!email || !password) {

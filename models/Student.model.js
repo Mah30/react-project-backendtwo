@@ -4,6 +4,10 @@ const Schema = mongoose.Schema;
 
 const studentsSchema = new Schema ({
 
+  isAdmin: {
+    type: Boolean,
+  },
+
     firstName: {
         lowercase: true,   
         required: true,
