@@ -67,7 +67,10 @@ router.post('/login', async (req, res, next) => {
         if (bcrypt.compareSync(password, potentialStudent.passwordHash)) {
         
           // The user has the right credentials
-          const payload = { studentId: potentialStudent._id }
+          const payload = {
+            studentId: potentialStudent._id,
+            isAdmin: potentialStudent.isAdmin,
+          }
           const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
             algorithm: 'HS256',
             expiresIn: '6h',
