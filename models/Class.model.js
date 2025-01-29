@@ -6,6 +6,12 @@ const ClassSchema = new Schema ({
         required: true, 
         type: String,
     },
+    description: { 
+        type: String, 
+    },
+    image: { 
+        type: String
+     },
     /* instructor: {
         type: Schema.Types.ObjectId, 
         ref: "Instructor",        

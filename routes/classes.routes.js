@@ -57,6 +57,8 @@ router.post('/', isAuthenticated, async (req, res, next) => {
             schedule: req.body.schedule,
             duration: req.body.duration,
             bookings: req.body.bookings,
+            description: req.body.description,
+            image: req.body.image, 
         });
 
         console.log("Class added ->", createdClass);
