@@ -17,6 +17,8 @@ router.use('/classes', classesRoutes )
 const studentsRoutes = require('./students.routes');
 router.use('/students', studentsRoutes);
 
+const uploadRoutes = require('./upload.routes');
+router.use('/upload', uploadRoutes);
 
  
 

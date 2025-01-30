@@ -3,7 +3,10 @@ require ("dotenv").config()
 const mongoose = require ("mongoose");
 const configureApp = require("./config"); // Importa a configuração dos middlewares
 const { isAuthenticated } = require("./middlewares/route-guard.middleware");
-const withDB = require("./db")
+const withDB = require("./db");
+const uploadRoutes = require("./routes/upload.routes"); // Importando a rota de upload
+
+
 
 
 
@@ -27,6 +30,7 @@ app.use('/auth', authRoutes)
 
 const indexRoutes = require('./routes/index.routes')
 app.use('/api', indexRoutes) 
+
 
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
