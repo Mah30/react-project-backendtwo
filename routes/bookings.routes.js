@@ -32,7 +32,7 @@ const router = require('express').Router();
 // GET /api/bookings/student - Retrieves all bookings for the authenticated student
 router.get('/student', isAuthenticated, async (req, res, next) => {
   try {
-    console.log("tou aqui");
+    console.log("I'm here");
     const studentId = req.tokenPayload.studentId;
 
     // Encontra todas as reservas do estudante autenticado
@@ -40,11 +40,13 @@ router.get('/student', isAuthenticated, async (req, res, next) => {
       .populate('class', 'name schedule duration') 
       .populate('student', 'firstName lastName email'); 
 
-    if (!bookings.length) {
+   /*  if (!bookings.length) {
       return res.status(404).json({ message: "No bookings found for this student" });
-    }
+    } */
 
-    res.status(200).json(bookings); // Retorna todas as reservas do estudante
+    // Mesmo sem reservas, retorna lista vazia
+    return res.status(200).json(bookings); // Retorna todas as reservas do estudante
+
   } catch (error) {
     console.error('Error retrieving student bookings ->', error.message);
     next(error);
